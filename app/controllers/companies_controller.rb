@@ -14,23 +14,31 @@ class CompaniesController < ApplicationController
 
   def create
     @company = Company.new(company_params)
-    if @company.save
-      redirect_to companies_path, notice: "Saved"
-    else
-      render :new
-    end
+    @company.save!
+    redirect_to companies_path, notice: "Saved"
+  rescue StandardError => e
+    flash[:error] = e.message
+    render :new
   end
 
   def edit
   end
 
   def update
-    if @company.update(company_params)
-      redirect_to companies_path, notice: "Changes Saved"
-    else
-      render :edit
-    end
-  end  
+    @company.update!(company_params)
+    redirect_to companies_path, notice: "Changes Saved"
+  rescue StandardError => e
+    flash[:error] = e.message
+    render :edit
+  end 
+  
+  def destroy
+    @company.destroy
+    redirect_to companies_path, notice: "Company successfully deleted."
+  rescue StandardError => e
+    flash[:error] = e.message
+    redirect_to companies_path
+  end
 
   private
 
