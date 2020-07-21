@@ -98,4 +98,22 @@ class CompaniesControllerTest < ApplicationSystemTestCase
     assert_equal "NY", new_company.state
   end
 
+  test "Delete record when prompt is accepted" do
+    visit company_path(@company)
+    company_id = @company.id
+    message = accept_prompt {click_link('Delete')}
+    assert_equal 'Are you sure you want to delete Hometown Painting?', message
+    assert_text "Company successfully deleted."
+    assert_raise ActiveRecord::RecordNotFound do 
+      Company.find(company_id)
+    end
+  end
+
+  test "does not deletes record when prompt is rejected" do
+    visit company_path(@company)
+    company_count = Company.count
+    dismiss_prompt {click_link('Delete')}
+    new_count = Company.count
+    assert_equal new_count, company_count
+  end
 end
